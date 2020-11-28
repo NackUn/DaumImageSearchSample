@@ -12,10 +12,11 @@ android {
 
     defaultConfig {
         applicationId "com.example.daumimagesearchsample"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
