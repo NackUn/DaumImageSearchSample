@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.daumimagesearchsample.BR
 import com.example.daumimagesearchsample.R
 import com.example.daumimagesearchsample.databinding.MainActivityBinding
@@ -32,10 +33,35 @@ class MainActivity : BaseActivity<MainActivityBinding, MainViewModel>(
     }
 
     private fun setRecyclerView() {
-        binding.mainRecyclerView.layoutManager =
-            LinearLayoutManager(this).also { it.orientation = LinearLayoutManager.HORIZONTAL }
+        binding.mainRecyclerView.run {
+            layoutManager = LinearLayoutManager(this@MainActivity).also {
+                it.orientation = LinearLayoutManager.HORIZONTAL
+            }
 
-        binding.mainRecyclerView.adapter = mainAdapter
+            val scrollListener = object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    val lastVisibleItem = (layoutManager as LinearLayoutManager)
+                        .findLastCompletelyVisibleItemPosition()
+
+                    if ((layoutManager as LinearLayoutManager).itemCount <= lastVisibleItem + 1) {
+                        if (vm.hasNextPage()) {
+                            vm.currentPage.value?.let {
+                                val nextPage = it + 1
+                                vm.searchImage(nextPage)
+                                vm.currentPage.value = nextPage
+                            }
+                        } else {
+                            showToast("마지막 이미지입니다. 더 이상 검색결과가 없습니다.")
+                        }
+                    }
+                }
+            }
+
+            addOnScrollListener(scrollListener)
+            adapter = mainAdapter
+        }
     }
 
     private fun setListener() {
@@ -88,6 +114,7 @@ class MainActivity : BaseActivity<MainActivityBinding, MainViewModel>(
 
         val searchCompleteYNObserver = Observer<Boolean> {
             if (it) {
+                binding.mainRecyclerView.scrollToPosition(0)
                 closeKeyboard()
             }
         }

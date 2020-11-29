@@ -10,6 +10,5 @@ fun RecyclerView.setItems(items: List<Map<String, String>>) {
     (this.adapter as? BaseRecyclerView.BaseAdapter<Any, *>)?.run {
         setItems(items)
         notifyDataSetChanged()
-        scrollToPosition(0)
     }
 }
