@@ -36,6 +36,9 @@ class MainViewModel(
 
     private val _resultInfo = MutableLiveData<Map<String, Int>>()
 
+    private val _loadingYN = MutableLiveData<Boolean>()
+    val loadingYN: LiveData<Boolean> get() = _loadingYN
+
     var searchWord = MutableLiveData<String>()
     var currentPage = MutableLiveData<Int>()
 
@@ -43,6 +46,7 @@ class MainViewModel(
         _items.value = mutableListOf()
         _resultInfo.value = mutableMapOf()
         _searchCompleteYN.value = false
+        _loadingYN.value = false
         currentPage.value = FIRST_ITEM
 
         addDisposable(
@@ -68,12 +72,22 @@ class MainViewModel(
         _searchCompleteYN.value = true
     }
 
+    private fun startLoading() {
+        _loadingYN.postValue(true)
+    }
+
+    private fun stopLoading() {
+        _loadingYN.postValue(false)
+    }
+
     fun hasNextPage(): Boolean =
         _resultInfo.value?.let {
             return it[IS_END] != TRUE
         } ?: false
 
     fun searchImage(page: Int) {
+        startLoading()
+
         searchWord.value?.let { searchWord ->
             addDisposable(
                 searchImageUseCase(searchWord = searchWord, page = page)
@@ -123,8 +137,12 @@ class MainViewModel(
                                     _items.value = itemsArrayList
                                 }
                             }
+                            stopLoading()
                         },
-                        { showToast("오류가 발생했습니다. 오류 메세지 : {$it.message}") }
+                        {
+                            stopLoading()
+                            showToast("오류가 발생했습니다. 오류 메세지 : {$it.message}")
+                        }
                     )
             )
         } ?: showToast("검색어를 정확히 입력해주세요.")

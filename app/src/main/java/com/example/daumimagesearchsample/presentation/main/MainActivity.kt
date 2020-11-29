@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -97,6 +98,14 @@ class MainActivity : BaseActivity<MainActivityBinding, MainViewModel>(
         }
     }
 
+    private fun startLoading() {
+        binding.mainProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun stopLoading() {
+        binding.mainProgressBar.visibility = View.GONE
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -119,6 +128,15 @@ class MainActivity : BaseActivity<MainActivityBinding, MainViewModel>(
             }
         }
         vm.searchCompleteYN.observe(this, searchCompleteYNObserver)
+
+        val loadingYNObserver = Observer<Boolean> {
+            if (it) {
+                startLoading()
+            } else {
+                stopLoading()
+            }
+        }
+        vm.loadingYN.observe(this, loadingYNObserver)
     }
 
 }
