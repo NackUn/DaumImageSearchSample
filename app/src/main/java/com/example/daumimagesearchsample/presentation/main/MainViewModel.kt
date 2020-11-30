@@ -82,6 +82,12 @@ class MainViewModel(
         _loadingYN.postValue(false)
     }
 
+    private fun finishSearchNoResult() {
+        stopLoading()
+        clearItems()
+        completeSearch()
+    }
+
     fun hasNextPage(): Boolean =
         _resultInfo.value?.let {
             return it[IS_END] != TRUE
@@ -109,10 +115,8 @@ class MainViewModel(
                             )
 
                             if (it.meta.total_count == 0) {
-                                stopLoading()
                                 showToast(R.string.no_search_result)
-                                clearItems()
-                                completeSearch()
+                                finishSearchNoResult()
                                 return@subscribe
                             }
 
@@ -143,8 +147,8 @@ class MainViewModel(
                             stopLoading()
                         },
                         {
-                            stopLoading()
                             showToast(R.string.an_error_has_occurred)
+                            finishSearchNoResult()
                         }
                     )
             )
