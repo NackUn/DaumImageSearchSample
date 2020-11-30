@@ -107,6 +107,7 @@ class MainViewModel(
                             )
 
                             if (it.meta.total_count == 0) {
+                                stopLoading()
                                 showToast("검색결과가 없습니다.")
                                 clearItems()
                                 completeSearch()
