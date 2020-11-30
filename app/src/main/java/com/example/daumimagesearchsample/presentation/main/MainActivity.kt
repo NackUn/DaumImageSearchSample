@@ -46,15 +46,13 @@ class MainActivity : BaseActivity<MainActivityBinding, MainViewModel>(
                     val lastVisibleItem = (layoutManager as LinearLayoutManager)
                         .findLastCompletelyVisibleItemPosition()
 
-                    if ((layoutManager as LinearLayoutManager).itemCount <= lastVisibleItem + 1) {
-                        if (vm.hasNextPage()) {
+                    if (vm.hasNextPage()) {
+                        if ((layoutManager as LinearLayoutManager).itemCount <= lastVisibleItem + 1) {
                             vm.currentPage.value?.let {
                                 val nextPage = it + 1
                                 vm.searchImage(nextPage)
                                 vm.currentPage.value = nextPage
                             }
-                        } else {
-                            showToast("마지막 이미지입니다. 더 이상 검색결과가 없습니다.")
                         }
                     }
                 }
@@ -116,10 +114,10 @@ class MainActivity : BaseActivity<MainActivityBinding, MainViewModel>(
     override fun initViewModel() {
         binding.setVariable(BR.mainVM, vm)
 
-        val toastMsgObserver = Observer<String> {
-            showToast(it)
+        val toastMsgObserver = Observer<Int> {
+            showToast(getString(it))
         }
-        vm.toastMsg.observe(this, toastMsgObserver)
+        vm.toastResId.observe(this, toastMsgObserver)
 
         val searchCompleteYNObserver = Observer<Boolean> {
             if (it) {

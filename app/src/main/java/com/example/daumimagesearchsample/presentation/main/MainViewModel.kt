@@ -2,6 +2,7 @@ package com.example.daumimagesearchsample.presentation.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.daumimagesearchsample.R
 import com.example.daumimagesearchsample.domain.usecase.SearchImageUseCase
 import com.example.daumimagesearchsample.presentation.base.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -21,6 +22,7 @@ class MainViewModel(
         private const val IS_END = "is_end"
         private const val PAGEABLE_COUNT = "pageable_count"
         private const val TOTAL_COUNT = "total_count"
+        private const val IMAGE_URL = "image_url"
     }
 
     private val changeEditTextSubject = PublishSubject.create<String>()
@@ -28,8 +30,8 @@ class MainViewModel(
     private val _items = MutableLiveData<List<Map<String, String>>>()
     val items: LiveData<List<Map<String, String>>> get() = _items
 
-    private val _toastMsg = MutableLiveData<String>()
-    val toastMsg: LiveData<String> get() = _toastMsg
+    private val _toastResId = MutableLiveData<Int>()
+    val toastResId: LiveData<Int> get() = _toastResId
 
     private val _searchCompleteYN = MutableLiveData<Boolean>()
     val searchCompleteYN: LiveData<Boolean> get() = _searchCompleteYN
@@ -60,8 +62,8 @@ class MainViewModel(
         )
     }
 
-    private fun showToast(msg: String) {
-        _toastMsg.value = msg
+    private fun showToast(resId: Int) {
+        _toastResId.value = resId
     }
 
     private fun clearItems() {
@@ -108,7 +110,7 @@ class MainViewModel(
 
                             if (it.meta.total_count == 0) {
                                 stopLoading()
-                                showToast("검색결과가 없습니다.")
+                                showToast(R.string.no_search_result)
                                 clearItems()
                                 completeSearch()
                                 return@subscribe
@@ -119,7 +121,7 @@ class MainViewModel(
                                     clearItems()
                                     _items.value = it.documents.map { document ->
                                         mapOf(
-                                            "image_url" to document.image_url
+                                            IMAGE_URL to document.image_url
                                         )
                                     }
                                     completeSearch()
@@ -127,7 +129,7 @@ class MainViewModel(
                                 else -> {
                                     val newItems = it.documents.map { document ->
                                         mapOf(
-                                            "image_url" to document.image_url
+                                            IMAGE_URL to document.image_url
                                         )
                                     }
                                     val itemsArrayList = arrayListOf<Map<String, String>>()
@@ -142,11 +144,11 @@ class MainViewModel(
                         },
                         {
                             stopLoading()
-                            showToast("오류가 발생했습니다. 오류 메세지 : {$it.message}")
+                            showToast(R.string.an_error_has_occurred)
                         }
                     )
             )
-        } ?: showToast("검색어를 정확히 입력해주세요.")
+        } ?: showToast(R.string.please_enter_the_exact_search_term)
     }
 
     fun changeEditText(text: String) {

@@ -3,4 +3,8 @@
     <string name="image_view_description">Image</string>
 
     <string name="main_et_search_hint">검색어를 입력해주세요.</string>
+
+    <string name="no_search_result">검색결과가 없습니다.</string>
+    <string name="please_enter_the_exact_search_term">검색어를 정확히 입력해주세요.</string>
+    <string name="an_error_has_occurred">오류가 발생했습니다.</string>
 </resources>
